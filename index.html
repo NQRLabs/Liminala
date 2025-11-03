@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    MIT License
+
+    Copyright (c) 2025 NQR
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liminala</title>
+  
+  <!-- External Libraries for Metadata Handling -->
+  <script src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/png-chunks-extract@1.0.0/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/png-chunks-encode@1.0.1/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/png-chunk-text@1.0.0/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/music-metadata-browser@2.5.10/dist/music-metadata-browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/browser-id3-writer@6.1.0/dist/browser-id3-writer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/exifreader@4.14.2/dist/exif-reader.js"></script>
+  
+  <style>
+    :root {
+      --bg: #0c1020;
+      --card: #151c3b;
+      --ink: #eef1ff;
+      --dim: #b9c6ef;
+      --border: #2b3868;
+      --accent: #1fc9aa;
+      --accent-hover: #18b79a;
+      --accent-dark: #17b399;
+      --input-bg: #0f1432;
+      --warning: #ff6b6b;
+      --success: #51cf66;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .app-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 20px 12px 12px;
+    }
+
+    .app-logo {
+      max-width: 200px; 
+      height: auto;
+      margin: 0;
+      display: block;
+      object-fit: contain;
+    }
+
+    .app-title {
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .app-subtitle {
+      color: var(--dim);
+      font-size: 0.9rem;
+      font-style: italic;
+      margin: 0 0 2px 0;
+    }
+
+    /* SHELL SECTIONS */
+    .panel {
+      width: 92vw;
+      max-width: 760px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      padding: 20px;
+      margin: 12px 0;
+      text-align: left;
+    }
+
+    .section-title {
+      margin: 0 0 12px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 10px 0 0;
+      justify-content: flex-start;
+      align-items: flex-end;
+    }
+
+    /* FORM ELEMENTS */
+    label {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--dim);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 150px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    select,
+    textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      border-radius: 6px;
+      padding: 7px 8px;
+      font-size: 0.85rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31, 201, 170, 0.12);
+    }
+
+    button {
+      background: var(--accent);
+      color: #0b0f14;
+      border: 1px solid var(--accent-dark);
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.3px;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 4px rgba(31, 201, 170, 0.2);
+    }
+
+    button:hover:not(:disabled) {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(31, 201, 170, 0.3);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(31, 201, 170, 0.2);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button.secondary {
+      background: var(--card);
+      color: var(--ink);
+      border-color: var(--border);
+      box-shadow: none;
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: var(--input-bg);
+      border-color: var(--accent);
+    }
+
+    button.danger {
+      background: var(--warning);
+      border-color: #ff5252;
+    }
+
+    button.danger:hover:not(:disabled) {
+      background: #ff5252;
+    }
+
+    /* FILE UPLOAD AREA */
+    .file-upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(12, 16, 32, 0.3);
+    }
+
+    .file-upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(31, 201, 170, 0.05);
+    }
+
+    .file-upload-area.dragover {
+      border-color: var(--accent);
+      background: rgba(31, 201, 170, 0.1);
+      transform: scale(1.01);
+    }
+
+    .file-info {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(81, 207, 102, 0.1);
+      border: 1px solid rgba(81, 207, 102, 0.3);
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .file-info strong {
+      color: var(--success);
+    }
+
+    /* METADATA EDITOR */
+    .metadata-container {
+      display: none;
+      margin-top: 16px;
+    }
+
+    .metadata-container.active {
+      display: block;
+    }
+
+    .metadata-field {
+      display: grid;
+      grid-template-columns: 200px 1fr auto;
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: rgba(12, 16, 32, 0.3);
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s ease;
+    }
+
+    .metadata-field:hover {
+      border-color: var(--border);
+    }
+
+    .metadata-field label {
+      margin: 0;
+      min-width: auto;
+    }
+
+    .metadata-field input,
+    .metadata-field textarea {
+      width: 100%;
+    }
+
+    .metadata-field button {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .field-label-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-name {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .field-category {
+      font-size: 0.7rem;
+      color: var(--dim);
+      opacity: 0.8;
+    }
+
+    .metadata-type-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 4px;
+    }
+
+    .badge-standard {
+      background: rgba(31, 201, 170, 0.2);
+      color: var(--accent);
+    }
+
+    .badge-custom {
+      background: rgba(255, 187, 51, 0.2);
+      color: #ffbb33;
+    }
+
+    /* OUTPUT AREA */
+    .output-area {
+      background: rgba(12, 16, 32, 0.15);
+      border: 1px dashed rgba(185, 198, 239, 0.35);
+      border-radius: 10px;
+      padding: 16px;
+      color: var(--dim);
+      font-size: 0.85rem;
+      min-height: 90px;
+    }
+
+    .status-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+    }
+
+    .status-success {
+      background: rgba(81, 207, 102, 0.1);
+      border: 1px solid rgba(81, 207, 102, 0.3);
+      color: var(--success);
+    }
+
+    .status-error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: var(--warning);
+    }
+
+    .status-info {
+      background: rgba(31, 201, 170, 0.1);
+      border: 1px solid rgba(31, 201, 170, 0.3);
+      color: var(--accent);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    /* FOOTER / LICENSE */
+    .license-footer {
+      margin-top: 30px;
+      margin-bottom: 20px;
+      padding: 10px 8px;
+      font-size: 0.68rem;
+      color: var(--dim);
+      opacity: 0.7;
+      cursor: pointer;
+      transition: opacity 0.15s ease;
+      text-align: center;
+    }
+
+    .license-footer:hover {
+      opacity: 1;
+    }
+
+    .license-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 999;
+    }
+
+    .license-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 520px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.6);
+      z-index: 1000;
+      text-align: center;
+    }
+
+    .license-modal.show,
+    .license-overlay.show {
+      display: block;
+    }
+
+    .license-modal-header {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-right: 32px;
+      gap: 12px;
+    }
+
+    .license-modal-title {
+      margin: 0;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+    }
+
+    .license-modal-close {
+      position: absolute;
+      top: 0;
+      right: 0;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--dim);
+      line-height: 1;
+    }
+
+    .small-muted {
+      color: var(--dim);
+      font-size: 0.7rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .panel {
+        width: 95vw;
+        padding: 16px 12px;
+      }
+      .row {
+        gap: 8px 12px;
+      }
+      label {
+        min-width: 120px;
+      }
+      .metadata-field {
+        grid-template-columns: 1fr;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+      button {
+        width: 100%;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="app-header">
+    <img src="assets/images/logo.png" alt="Liminala Logo" class="app-logo">
+    <h2 class="app-title">Liminala</h2>
+    <p class="app-subtitle">A lightweight metadata viewer-editor by NQR</p>
+  </header>
+
+  <!-- FILE UPLOAD PANEL -->
+  <main class="panel" aria-labelledby="upload-title">
+    <h2 class="section-title" id="upload-title">File Upload</h2>
+    <p class="small-muted" style="margin-bottom: 14px;">
+      Supports JPEG, PNG, WebP, TIFF images and MP3, FLAC, OGG, WAV, M4A audio files. All processing happens locally in your browser.
+    </p>
+    
+    <div class="file-upload-area" id="dropZone">
+      <div style="font-size: 2rem; margin-bottom: 8px;">📁</div>
+      <div style="font-size: 0.95rem; font-weight: 500; margin-bottom: 6px;">
+        Click to select or drag & drop a file
+      </div>
+      <div class="small-muted">JPEG, PNG, WebP, TIFF, MP3, FLAC, OGG, WAV, M4A</div>
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.mp3,.flac,.ogg,.wav,.m4a,.webp,.tiff,.tif" style="display: none;">
+    </div>
+
+    <div id="fileInfo" class="file-info hidden">
+      <strong>File loaded:</strong> <span id="fileName"></span><br>
+      <strong>Type:</strong> <span id="fileType"></span> | <strong>Size:</strong> <span id="fileSize"></span>
+    </div>
+  </main>
+
+  <!-- METADATA EDITOR PANEL -->
+  <section class="panel metadata-container" id="metadataPanel" aria-labelledby="metadata-title">
+    <h2 class="section-title" id="metadata-title">Metadata Editor</h2>
+    <p class="small-muted" style="margin-bottom: 14px;">
+      Edit existing metadata or add custom fields. Perfect for embedding ARG clues!
+    </p>
+
+    <div style="margin-bottom: 14px;">
+      <label style="min-width: auto; margin-bottom: 8px;">
+        Filter by Category
+        <select id="categoryFilter" style="width: 100%; max-width: 300px;">
+          <option value="all">All</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="metadataFields"></div>
+
+    <div class="action-buttons">
+      <button type="button" id="addFieldBtn" class="secondary">+ Add Custom Field</button>
+      <button type="button" id="saveBtn">💾 Save Modified File</button>
+      <button type="button" id="saveTxtBtn" class="secondary">📄 Save Metadata to TXT</button>
+      <button type="button" id="clearBtn" class="secondary">Clear All</button>
+    </div>
+  </section>
+
+  <!-- OUTPUT PANEL -->
+  <section class="panel" aria-labelledby="output-title">
+    <h2 class="section-title" id="output-title">Status & Information</h2>
+    <div class="output-area" id="output">
+      <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 1.5rem; margin-bottom: 8px;">🔍</div>
+        <div>No file loaded yet. Upload a file to begin editing metadata.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER / LICENSE -->
+  <footer class="license-footer" id="licenseLink">
+    MIT License • Developed by NQR • Click to view
+  </footer>
+
+  <div class="license-overlay" id="licenseOverlay"></div>
+  <div class="license-modal" id="licenseModal" role="dialog" aria-modal="true" aria-labelledby="licenseTitle">
+    <div class="license-modal-header">
+      <h3 class="license-modal-title" id="licenseTitle">MIT License</h3>
+      <span class="license-modal-close" id="licenseClose" aria-label="Close license dialog">&times;</span>
+    </div>
+    <pre class="small-muted" style="text-align:center; white-space:pre-wrap; margin-top:14px;">
+Copyright (c) 2025 NQR
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+    </pre>
+  </div>
+
+  <script>
+    // ============================================================================
+    // STATE MANAGEMENT
+    // ============================================================================
+    let currentFile = null;
+    let currentFileType = null;
+    let metadataStore = {}; // Format: { key: { value, category, isStandard } }
+    let originalImageData = null; // For JPEG preservation
+    let customFieldCounter = 0;
+    let currentFilter = 'all'; // Current category filter
+
+    // ============================================================================
+    // STANDARD FIELD DEFINITIONS
+    // ============================================================================
+    const standardFields = {
+      jpeg: new Set([
+        'Make', 'Model', 'DateTime', 'DateTimeOriginal', 'DateTimeDigitized',
+        'Artist', 'Copyright', 'Software', 'ImageDescription', 'UserComment',
+        'Orientation', 'XResolution', 'YResolution', 'ResolutionUnit',
+        'ExposureTime', 'FNumber', 'ISO', 'ISOSpeedRatings', 'FocalLength',
+        'Flash', 'WhiteBalance', 'ExposureMode', 'MeteringMode',
+        'GPSLatitude', 'GPSLongitude', 'GPSAltitude', 'GPSTimeStamp',
+        'GPSDateStamp', 'ColorSpace', 'PixelXDimension', 'PixelYDimension',
+        'ExifVersion', 'FlashpixVersion', 'ComponentsConfiguration',
+        'CompressedBitsPerPixel', 'ShutterSpeedValue', 'ApertureValue',
+        'BrightnessValue', 'ExposureBiasValue', 'MaxApertureValue',
+        'SubjectDistance', 'LightSource', 'SceneCaptureType', 'Contrast',
+        'Saturation', 'Sharpness', 'LensModel', 'LensMake', 'YCbCrPositioning',
+        'ExifImageWidth', 'ExifImageHeight', 'FocalLengthIn35mmFilm',
+        'DigitalZoomRatio', 'SceneType', 'CustomRendered', 'GainControl',
+        'SubjectDistanceRange', 'ImageUniqueID', 'CameraOwnerName', 'BodySerialNumber',
+        'LensSerialNumber', 'LensSpecification'
+      ]),
+      png: new Set([
+        'Title', 'Author', 'Description', 'Copyright', 'CreationTime', 'Creation Time',
+        'Software', 'Disclaimer', 'Warning', 'Source', 'Comment',
+        'XML:com.adobe.xmp', 'ImageWidth', 'ImageHeight', 'BitDepth', 'ColorType',
+        'PixelsPerUnitX', 'PixelsPerUnitY', 'PixelUnits'
+      ]),
+      audio: new Set([
+        'title', 'artist', 'album', 'year', 'comment', 'genre', 'track',
+        'lyrics', 'publisher', 'composer', 'albumartist', 'conductor',
+        'remixer', 'encoder', 'date', 'BPM', 'ISRC', 'language', 'originalArtist',
+        'originalAlbum', 'copyright', 'url', 'encodedBy', 'albumArtist'
+      ]),
+      webp: new Set([
+        'ImageWidth', 'ImageHeight', 'BitsPerSample', 'Compression', 'Make', 'Model',
+        'Orientation', 'XResolution', 'YResolution', 'ResolutionUnit', 'Software',
+        'DateTime', 'Artist', 'Copyright', 'ExifVersion', 'ColorSpace'
+      ]),
+      tiff: new Set([
+        'ImageWidth', 'ImageHeight', 'BitsPerSample', 'Compression', 'PhotometricInterpretation',
+        'Make', 'Model', 'Orientation', 'SamplesPerPixel', 'XResolution', 'YResolution',
+        'PlanarConfiguration', 'ResolutionUnit', 'Software', 'DateTime', 'Artist', 'Copyright'
+      ])
+    };
+
+    // ============================================================================
+    // EXIF TAG NAMES MAPPING
+    // ============================================================================
+    const exifTagNames = {
+      '0th': {
+        256: 'ImageWidth', 257: 'ImageHeight', 258: 'BitsPerSample', 259: 'Compression',
+        262: 'PhotometricInterpretation', 270: 'ImageDescription', 271: 'Make', 272: 'Model',
+        273: 'StripOffsets', 274: 'Orientation', 277: 'SamplesPerPixel', 278: 'RowsPerStrip',
+        279: 'StripByteCounts', 282: 'XResolution', 283: 'YResolution', 284: 'PlanarConfiguration',
+        296: 'ResolutionUnit', 301: 'TransferFunction', 305: 'Software', 306: 'DateTime',
+        315: 'Artist', 318: 'WhitePoint', 319: 'PrimaryChromaticities', 513: 'JPEGInterchangeFormat',
+        514: 'JPEGInterchangeFormatLength', 529: 'YCbCrCoefficients', 530: 'YCbCrSubSampling',
+        531: 'YCbCrPositioning', 532: 'ReferenceBlackWhite', 33432: 'Copyright'
+      },
+      'Exif': {
+        33434: 'ExposureTime', 33437: 'FNumber', 34850: 'ExposureProgram', 34852: 'SpectralSensitivity',
+        34855: 'ISOSpeedRatings', 34856: 'OECF', 34864: 'SensitivityType', 36864: 'ExifVersion',
+        36867: 'DateTimeOriginal', 36868: 'DateTimeDigitized', 37121: 'ComponentsConfiguration',
+        37122: 'CompressedBitsPerPixel', 37377: 'ShutterSpeedValue', 37378: 'ApertureValue',
+        37379: 'BrightnessValue', 37380: 'ExposureBiasValue', 37381: 'MaxApertureValue',
+        37382: 'SubjectDistance', 37383: 'MeteringMode', 37384: 'LightSource', 37385: 'Flash',
+        37386: 'FocalLength', 37396: 'SubjectArea', 37500: 'MakerNote', 37510: 'UserComment',
+        40960: 'FlashpixVersion', 40961: 'ColorSpace', 40962: 'PixelXDimension', 40963: 'PixelYDimension',
+        40964: 'RelatedSoundFile', 41483: 'FlashEnergy', 41486: 'FocalPlaneXResolution',
+        41487: 'FocalPlaneYResolution', 41488: 'FocalPlaneResolutionUnit', 41495: 'SensingMethod',
+        41728: 'FileSource', 41729: 'SceneType', 41730: 'CFAPattern', 41985: 'CustomRendered',
+        41986: 'ExposureMode', 41987: 'WhiteBalance', 41988: 'DigitalZoomRatio', 41989: 'FocalLengthIn35mmFilm',
+        41990: 'SceneCaptureType', 41991: 'GainControl', 41992: 'Contrast', 41993: 'Saturation',
+        41994: 'Sharpness', 41996: 'SubjectDistanceRange', 42016: 'ImageUniqueID', 42032: 'CameraOwnerName',
+        42033: 'BodySerialNumber', 42034: 'LensSpecification', 42035: 'LensMake', 42036: 'LensModel',
+        42037: 'LensSerialNumber'
+      },
+      'GPS': {
+        0: 'GPSVersionID', 1: 'GPSLatitudeRef', 2: 'GPSLatitude', 3: 'GPSLongitudeRef',
+        4: 'GPSLongitude', 5: 'GPSAltitudeRef', 6: 'GPSAltitude', 7: 'GPSTimeStamp',
+        8: 'GPSSatellites', 9: 'GPSStatus', 10: 'GPSMeasureMode', 11: 'GPSDOP',
+        12: 'GPSSpeedRef', 13: 'GPSSpeed', 14: 'GPSTrackRef', 15: 'GPSTrack',
+        16: 'GPSImgDirectionRef', 17: 'GPSImgDirection', 18: 'GPSMapDatum', 19: 'GPSDestLatitudeRef',
+        20: 'GPSDestLatitude', 21: 'GPSDestLongitudeRef', 22: 'GPSDestLongitude', 23: 'GPSDestBearingRef',
+        24: 'GPSDestBearing', 25: 'GPSDestDistanceRef', 26: 'GPSDestDistance', 27: 'GPSProcessingMethod',
+        28: 'GPSAreaInformation', 29: 'GPSDateStamp', 30: 'GPSDifferential'
+      },
+      'Interop': {
+        1: 'InteroperabilityIndex', 2: 'InteroperabilityVersion'
+      },
+      '1st': {} // Thumbnail IFD
+    };
+
+    // ============================================================================
+    // DOM ELEMENTS
+    // ============================================================================
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileType = document.getElementById('fileType');
+    const fileSize = document.getElementById('fileSize');
+    const metadataPanel = document.getElementById('metadataPanel');
+    const metadataFields = document.getElementById('metadataFields');
+    const output = document.getElementById('output');
+    const addFieldBtn = document.getElementById('addFieldBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const saveTxtBtn = document.getElementById('saveTxtBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const categoryFilter = document.getElementById('categoryFilter');
+
+    // ============================================================================
+    // LICENSE MODAL
+    // ============================================================================
+    const licenseLink = document.getElementById('licenseLink');
+    const licenseOverlay = document.getElementById('licenseOverlay');
+    const licenseModal = document.getElementById('licenseModal');
+    const licenseClose = document.getElementById('licenseClose');
+
+    function openLicense() {
+      licenseOverlay.classList.add('show');
+      licenseModal.classList.add('show');
+    }
+
+    function closeLicense() {
+      licenseOverlay.classList.remove('show');
+      licenseModal.classList.remove('show');
+    }
+
+    licenseLink.addEventListener('click', openLicense);
+    licenseOverlay.addEventListener('click', closeLicense);
+    licenseClose.addEventListener('click', closeLicense);
+
+    // ============================================================================
+    // FILE UPLOAD HANDLERS
+    // ============================================================================
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFileSelect(files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+      }
+    });
+
+    // ============================================================================
+    // FILE PROCESSING
+    // ============================================================================
+    async function handleFileSelect(file) {
+      currentFile = file;
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      
+      // Display file info
+      fileName.textContent = file.name;
+      fileSize.textContent = formatFileSize(file.size);
+      fileInfo.classList.remove('hidden');
+
+      // Determine file type and process
+      if (['jpg', 'jpeg'].includes(fileExtension)) {
+        currentFileType = 'jpeg';
+        fileType.textContent = 'JPEG Image';
+        await processJPEG(file);
+      } else if (fileExtension === 'png') {
+        currentFileType = 'png';
+        fileType.textContent = 'PNG Image';
+        await processPNG(file);
+      } else if (fileExtension === 'webp') {
+        currentFileType = 'webp';
+        fileType.textContent = 'WebP Image';
+        await processWebP(file);
+      } else if (['tiff', 'tif'].includes(fileExtension)) {
+        currentFileType = 'tiff';
+        fileType.textContent = 'TIFF Image';
+        await processTIFF(file);
+      } else if (['mp3', 'flac', 'ogg', 'wav', 'm4a'].includes(fileExtension)) {
+        currentFileType = fileExtension;
+        fileType.textContent = fileExtension.toUpperCase() + ' Audio';
+        await processAudio(file);
+      } else {
+        showOutput('error', 'Unsupported file type. Please use supported image or audio files.');
+        return;
+      }
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+
+    // ============================================================================
+    // JPEG PROCESSING (piexifjs) - COMPREHENSIVE
+    // ============================================================================
+    async function processJPEG(file) {
+      showOutput('info', 'Reading JPEG EXIF metadata with piexifjs...');
+      
+      try {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const dataUrl = e.target.result;
+          originalImageData = dataUrl;
+          metadataStore = {};
+          
+          try {
+            const exifObj = piexif.load(dataUrl);
+            
+            // Process all IFD sections
+            const sections = ['0th', 'Exif', 'GPS', 'Interop', '1st'];
+            
+            sections.forEach(section => {
+              if (exifObj[section]) {
+                const sectionData = exifObj[section];
+                const tagNames = exifTagNames[section] || {};
+                
+                for (let tag in sectionData) {
+                  const tagNum = parseInt(tag);
+                  const tagName = tagNames[tagNum] || `Tag${tagNum}`;
+                  let value = sectionData[tag];
+                  
+                  // Format the value
+                  value = formatExifValue(value, tagNum, section);
+                  
+                  if (value !== null && value !== undefined && value !== '') {
+                    let category = `[EXIF-${section}]`;
+                    if (section === 'GPS') category = '[GPS]';
+                    else if (section === '0th') category = '[IFD0]';
+                    else if (section === '1st') category = '[IFD1-Thumbnail]';
+                    
+                    const isStandard = standardFields.jpeg.has(tagName);
+                    
+                    metadataStore[tagName] = {
+                      value: String(value),
+                      category: category,
+                      isStandard: isStandard
+                    };
+                  }
+                }
+              }
+            });
+            
+            // Add some common editable fields if they don't exist
+            const commonFields = [
+              { name: 'ImageDescription', category: '[IFD0]' },
+              { name: 'Artist', category: '[IFD0]' },
+              { name: 'Copyright', category: '[IFD0]' },
+              { name: 'UserComment', category: '[EXIF-Exif]' }
+            ];
+            
+            commonFields.forEach(field => {
+              if (!metadataStore[field.name]) {
+                metadataStore[field.name] = {
+                  value: '',
+                  category: field.category,
+                  isStandard: true
+                };
+              }
+            });
+            
+            renderMetadataFields();
+            updateCategoryFilter();
+            metadataPanel.classList.add('active');
+            showOutput('success', `Loaded ${Object.keys(metadataStore).length} EXIF fields from all IFDs. Ready to edit!`);
+            
+          } catch (exifError) {
+            console.error('EXIF parsing error:', exifError);
+            // Add default fields even if no EXIF
+            metadataStore = {
+              'ImageDescription': { value: '', category: '[IFD0]', isStandard: true },
+              'Artist': { value: '', category: '[IFD0]', isStandard: true },
+              'Copyright': { value: '', category: '[IFD0]', isStandard: true },
+              'UserComment': { value: '', category: '[EXIF-Exif]', isStandard: true }
+            };
+            renderMetadataFields();
+            updateCategoryFilter();
+            metadataPanel.classList.add('active');
+            showOutput('info', 'No EXIF data found. You can add metadata!');
+          }
+        };
+        reader.readAsDataURL(file);
+        
+      } catch (error) {
+        console.error('Error processing JPEG:', error);
+        showOutput('error', 'Error reading JPEG file: ' + error.message);
+      }
+    }
+
+    function formatExifValue(value, tagNum, section) {
+      if (value === null || value === undefined) return '';
+      
+      // Handle byte arrays
+      if (value instanceof Uint8Array || (Array.isArray(value) && typeof value[0] === 'number')) {
+        // For UserComment, try to decode as string
+        if (tagNum === 37510) {
+          try {
+            const decoder = new TextDecoder('utf-8');
+            const text = decoder.decode(new Uint8Array(value));
+            return text.replace(/\0/g, '').trim();
+          } catch (e) {
+            return '[Binary data]';
+          }
+        }
+        // For version numbers
+        if ([36864, 40960].includes(tagNum)) {
+          return String.fromCharCode(...value);
+        }
+        return value.join(', ');
+      }
+      
+      // Handle arrays
+      if (Array.isArray(value)) {
+        // GPS coordinates special handling
+        if (section === 'GPS' && [2, 4].includes(tagNum)) {
+          const deg = value[0][0] / value[0][1];
+          const min = value[1][0] / value[1][1];
+          const sec = value[2][0] / value[2][1];
+          return `${deg}° ${min}' ${sec}"`;
+        }
+        // Rational numbers
+        if (value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number') {
+          return value[1] !== 0 ? (value[0] / value[1]).toFixed(4) : '0';
+        }
+        return value.map(v => formatExifValue(v, tagNum, section)).join(', ');
+      }
+      
+      return value;
+    }
+
+    // ============================================================================
+    // PNG PROCESSING (png-chunks-extract) - COMPREHENSIVE
+    // ============================================================================
+    async function processPNG(file) {
+      showOutput('info', 'Reading PNG chunks...');
+      
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        // Check if png-chunks-extract is available
+        if (typeof extract === 'undefined') {
+          // Fallback to manual extraction
+          await processPNGManual(file);
+          return;
+        }
+        
+        metadataStore = {};
+        
+        try {
+          const chunks = extract(uint8Array);
+          
+          chunks.forEach(chunk => {
+            const chunkName = new TextDecoder().decode(chunk.name);
+            
+            // IHDR - Image header
+            if (chunkName === 'IHDR') {
+              const view = new DataView(chunk.data.buffer, chunk.data.byteOffset, chunk.data.byteLength);
+              metadataStore['ImageWidth'] = { value: String(view.getUint32(0)), category: '[PNG-IHDR]', isStandard: true };
+              metadataStore['ImageHeight'] = { value: String(view.getUint32(4)), category: '[PNG-IHDR]', isStandard: true };
+              metadataStore['BitDepth'] = { value: String(view.getUint8(8)), category: '[PNG-IHDR]', isStandard: true };
+              metadataStore['ColorType'] = { value: String(view.getUint8(9)), category: '[PNG-IHDR]', isStandard: true };
+              metadataStore['Compression'] = { value: String(view.getUint8(10)), category: '[PNG-IHDR]', isStandard: true };
+              metadataStore['Filter'] = { value: String(view.getUint8(11)), category: '[PNG-IHDR]', isStandard: true };
+              metadataStore['Interlace'] = { value: String(view.getUint8(12)), category: '[PNG-IHDR]', isStandard: true };
+            }
+            
+            // pHYs - Physical dimensions
+            else if (chunkName === 'pHYs') {
+              const view = new DataView(chunk.data.buffer, chunk.data.byteOffset, chunk.data.byteLength);
+              metadataStore['PixelsPerUnitX'] = { value: String(view.getUint32(0)), category: '[PNG-pHYs]', isStandard: true };
+              metadataStore['PixelsPerUnitY'] = { value: String(view.getUint32(4)), category: '[PNG-pHYs]', isStandard: true };
+              const unit = view.getUint8(8);
+              metadataStore['PixelUnits'] = { value: unit === 1 ? 'meters' : 'unknown', category: '[PNG-pHYs]', isStandard: true };
+            }
+            
+            // tIME - Modification time
+            else if (chunkName === 'tIME') {
+              const view = new DataView(chunk.data.buffer, chunk.data.byteOffset, chunk.data.byteLength);
+              const year = view.getUint16(0);
+              const month = view.getUint8(2);
+              const day = view.getUint8(3);
+              const hour = view.getUint8(4);
+              const minute = view.getUint8(5);
+              const second = view.getUint8(6);
+              metadataStore['ModificationTime'] = { 
+                value: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`, 
+                category: '[PNG-tIME]', 
+                isStandard: true 
+              };
+            }
+            
+            // tEXt - Text metadata
+            else if (chunkName === 'tEXt') {
+              let nullIndex = 0;
+              while (nullIndex < chunk.data.length && chunk.data[nullIndex] !== 0) {
+                nullIndex++;
+              }
+              const keyword = new TextDecoder().decode(chunk.data.slice(0, nullIndex));
+              const text = new TextDecoder().decode(chunk.data.slice(nullIndex + 1));
+              const isStandard = standardFields.png.has(keyword);
+              metadataStore[keyword] = { value: text, category: '[PNG-tEXt]', isStandard: isStandard };
+            }
+            
+            // iTXt - International text
+            else if (chunkName === 'iTXt') {
+              let nullIndex = 0;
+              while (nullIndex < chunk.data.length && chunk.data[nullIndex] !== 0) {
+                nullIndex++;
+              }
+              const keyword = new TextDecoder().decode(chunk.data.slice(0, nullIndex));
+              let textStart = nullIndex + 3; // Skip null, compression flag, compression method
+              // Skip language tag and translated keyword
+              let nullCount = 0;
+              while (textStart < chunk.data.length && nullCount < 2) {
+                if (chunk.data[textStart] === 0) nullCount++;
+                textStart++;
+              }
+              const text = new TextDecoder('utf-8').decode(chunk.data.slice(textStart));
+              const isStandard = standardFields.png.has(keyword);
+              metadataStore[keyword] = { value: text, category: '[PNG-iTXt]', isStandard: isStandard };
+            }
+            
+            // zTXt - Compressed text
+            else if (chunkName === 'zTXt') {
+              let nullIndex = 0;
+              while (nullIndex < chunk.data.length && chunk.data[nullIndex] !== 0) {
+                nullIndex++;
+              }
+              const keyword = new TextDecoder().decode(chunk.data.slice(0, nullIndex));
+              metadataStore[keyword] = { value: '[Compressed text]', category: '[PNG-zTXt]', isStandard: false };
+            }
+          });
+          
+        } catch (extractError) {
+          console.error('PNG chunk extraction error:', extractError);
+        }
+        
+        // Add common editable fields if they don't exist
+        const commonFields = ['Title', 'Author', 'Description', 'Comment', 'Copyright', 'Software'];
+        commonFields.forEach(field => {
+          if (!metadataStore[field]) {
+            metadataStore[field] = { value: '', category: '[PNG-tEXt]', isStandard: true };
+          }
+        });
+        
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('success', `Loaded ${Object.keys(metadataStore).length} PNG metadata fields. Ready to edit!`);
+        
+      } catch (error) {
+        console.error('Error processing PNG:', error);
+        showOutput('error', 'Error reading PNG file: ' + error.message);
+      }
+    }
+
+    // Fallback manual PNG processing
+    async function processPNGManual(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const dataView = new DataView(arrayBuffer);
+      
+      metadataStore = {};
+      
+      // PNG signature check
+      const signature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+      let isValid = true;
+      for (let i = 0; i < 8; i++) {
+        if (dataView.getUint8(i) !== signature[i]) {
+          isValid = false;
+          break;
+        }
+      }
+      
+      if (!isValid) {
+        showOutput('error', 'Invalid PNG file format.');
+        return;
+      }
+
+      let offset = 8;
+      
+      while (offset < arrayBuffer.byteLength - 12) {
+        const length = dataView.getUint32(offset);
+        const type = String.fromCharCode(
+          dataView.getUint8(offset + 4),
+          dataView.getUint8(offset + 5),
+          dataView.getUint8(offset + 6),
+          dataView.getUint8(offset + 7)
+        );
+        
+        if (type === 'IHDR') {
+          metadataStore['ImageWidth'] = { value: String(dataView.getUint32(offset + 8)), category: '[PNG-IHDR]', isStandard: true };
+          metadataStore['ImageHeight'] = { value: String(dataView.getUint32(offset + 12)), category: '[PNG-IHDR]', isStandard: true };
+          metadataStore['BitDepth'] = { value: String(dataView.getUint8(offset + 16)), category: '[PNG-IHDR]', isStandard: true };
+          metadataStore['ColorType'] = { value: String(dataView.getUint8(offset + 17)), category: '[PNG-IHDR]', isStandard: true };
+        }
+        else if (type === 'pHYs') {
+          metadataStore['PixelsPerUnitX'] = { value: String(dataView.getUint32(offset + 8)), category: '[PNG-pHYs]', isStandard: true };
+          metadataStore['PixelsPerUnitY'] = { value: String(dataView.getUint32(offset + 12)), category: '[PNG-pHYs]', isStandard: true };
+          const unit = dataView.getUint8(offset + 16);
+          metadataStore['PixelUnits'] = { value: unit === 1 ? 'meters' : 'unknown', category: '[PNG-pHYs]', isStandard: true };
+        }
+        else if (type === 'tEXt') {
+          const chunkData = new Uint8Array(arrayBuffer, offset + 8, length);
+          let nullIndex = 0;
+          while (nullIndex < chunkData.length && chunkData[nullIndex] !== 0) {
+            nullIndex++;
+          }
+          const keyword = new TextDecoder().decode(chunkData.slice(0, nullIndex));
+          const text = new TextDecoder().decode(chunkData.slice(nullIndex + 1));
+          const isStandard = standardFields.png.has(keyword);
+          metadataStore[keyword] = { value: text, category: '[PNG-tEXt]', isStandard: isStandard };
+        }
+        
+        offset += 12 + length;
+      }
+
+      const commonFields = ['Title', 'Author', 'Description', 'Comment'];
+      commonFields.forEach(field => {
+        if (!metadataStore[field]) {
+          metadataStore[field] = { value: '', category: '[PNG-tEXt]', isStandard: true };
+        }
+      });
+
+      renderMetadataFields();
+      updateCategoryFilter();
+      metadataPanel.classList.add('active');
+      showOutput('success', `Loaded ${Object.keys(metadataStore).length} PNG metadata fields. Ready to edit!`);
+    }
+
+    // ============================================================================
+    // AUDIO PROCESSING (music-metadata-browser) - COMPREHENSIVE
+    // ============================================================================
+    async function processAudio(file) {
+      showOutput('info', 'Reading audio metadata with music-metadata-browser...');
+      
+      try {
+        // Check if music-metadata-browser is available
+        if (typeof musicMetadata === 'undefined' || !musicMetadata.parseBlob) {
+          showOutput('error', 'Audio library not loaded. Please refresh the page.');
+          return;
+        }
+        
+        const metadata = await musicMetadata.parseBlob(file);
+        metadataStore = {};
+        
+        // Common metadata
+        const common = metadata.common;
+        if (common) {
+          for (let key in common) {
+            let value = common[key];
+            
+            // Skip picture data
+            if (key === 'picture') continue;
+            
+            // Handle arrays
+            if (Array.isArray(value)) {
+              value = value.join(', ');
+            } else if (typeof value === 'object' && value !== null) {
+              continue; // Skip complex objects
+            }
+            
+            if (value !== null && value !== undefined && value !== '') {
+              const isStandard = standardFields.audio.has(key);
+              metadataStore[key] = {
+                value: String(value),
+                category: '[Common]',
+                isStandard: isStandard
+              };
+            }
+          }
+        }
+        
+        // Native tags (format-specific)
+        const native = metadata.native;
+        if (native) {
+          for (let format in native) {
+            const tags = native[format];
+            tags.forEach(tag => {
+              const key = tag.id;
+              let value = tag.value;
+              
+              // Skip if already in common
+              if (metadataStore[key]) return;
+              
+              // Handle different value types
+              if (Array.isArray(value)) {
+                value = value.join(', ');
+              } else if (typeof value === 'object' && value !== null) {
+                value = JSON.stringify(value);
+              }
+              
+              if (value !== null && value !== undefined && value !== '') {
+                const isStandard = standardFields.audio.has(key.toLowerCase());
+                
+                // Determine category based on format
+                let category = '[Unknown]';
+                if (format === 'ID3v2.4' || format === 'ID3v2.3' || format === 'ID3v2.2') {
+                  category = '[ID3v2]';
+                } else if (format === 'vorbis') {
+                  category = '[Vorbis]';
+                } else if (format === 'iTunes') {
+                  category = '[iTunes]';
+                } else if (format === 'RIFF') {
+                  category = '[RIFF]';
+                } else if (format === 'APEv2') {
+                  category = '[APEv2]';
+                } else {
+                  category = `[${format}]`;
+                }
+                
+                metadataStore[key] = {
+                  value: String(value),
+                  category: category,
+                  isStandard: isStandard
+                };
+              }
+            });
+          }
+        }
+        
+        // Format info
+        if (metadata.format) {
+          const format = metadata.format;
+          if (format.duration) {
+            metadataStore['Duration'] = {
+              value: `${Math.floor(format.duration / 60)}:${String(Math.floor(format.duration % 60)).padStart(2, '0')}`,
+              category: '[File-Format]',
+              isStandard: false
+            };
+          }
+          if (format.bitrate) {
+            metadataStore['Bitrate'] = {
+              value: `${Math.round(format.bitrate / 1000)} kbps`,
+              category: '[File-Format]',
+              isStandard: false
+            };
+          }
+          if (format.sampleRate) {
+            metadataStore['SampleRate'] = {
+              value: `${format.sampleRate} Hz`,
+              category: '[File-Format]',
+              isStandard: false
+            };
+          }
+          if (format.numberOfChannels) {
+            metadataStore['Channels'] = {
+              value: String(format.numberOfChannels),
+              category: '[File-Format]',
+              isStandard: false
+            };
+          }
+          if (format.codec) {
+            metadataStore['Codec'] = {
+              value: format.codec,
+              category: '[File-Format]',
+              isStandard: false
+            };
+          }
+        }
+        
+        // Add common editable fields if they don't exist
+        const commonFields = ['title', 'artist', 'album', 'year', 'comment', 'genre'];
+        commonFields.forEach(field => {
+          if (!metadataStore[field]) {
+            metadataStore[field] = {
+              value: '',
+              category: '[Common]',
+              isStandard: true
+            };
+          }
+        });
+        
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('success', `Loaded ${Object.keys(metadataStore).length} audio metadata fields. Ready to edit!`);
+        
+      } catch (error) {
+        console.error('Error processing audio:', error);
+        // Fallback to basic fields
+        metadataStore = {
+          'title': { value: '', category: '[Common]', isStandard: true },
+          'artist': { value: '', category: '[Common]', isStandard: true },
+          'album': { value: '', category: '[Common]', isStandard: true },
+          'year': { value: '', category: '[Common]', isStandard: true },
+          'comment': { value: '', category: '[Common]', isStandard: true }
+        };
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('info', 'No existing metadata found. You can add new tags!');
+      }
+    }
+
+    // ============================================================================
+    // WEBP PROCESSING (exifreader)
+    // ============================================================================
+    async function processWebP(file) {
+      showOutput('info', 'Reading WebP metadata with exifreader...');
+      
+      try {
+        if (typeof ExifReader === 'undefined') {
+          showOutput('error', 'WebP library not loaded. Please refresh the page.');
+          return;
+        }
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const tags = ExifReader.load(arrayBuffer);
+        
+        metadataStore = {};
+        
+        // Process all tags
+        for (let tagName in tags) {
+          const tag = tags[tagName];
+          let value = tag.description || tag.value;
+          
+          if (value === null || value === undefined || value === '') continue;
+          
+          // Convert to string
+          if (typeof value === 'object' && !Array.isArray(value)) {
+            value = JSON.stringify(value);
+          } else if (Array.isArray(value)) {
+            value = value.join(', ');
+          }
+          
+          // Determine category
+          let category = '[WebP]';
+          if (tagName.startsWith('GPS')) {
+            category = '[GPS]';
+          } else if (tagName.startsWith('EXIF') || ['Make', 'Model', 'DateTime', 'Software'].includes(tagName)) {
+            category = '[EXIF]';
+          } else if (tagName.startsWith('XMP') || tagName.startsWith('XML')) {
+            category = '[XMP]';
+          } else if (tagName.startsWith('ICC')) {
+            category = '[ICC Profile]';
+          }
+          
+          const isStandard = standardFields.webp.has(tagName);
+          
+          metadataStore[tagName] = {
+            value: String(value),
+            category: category,
+            isStandard: isStandard
+          };
+        }
+        
+        // Add common editable fields if they don't exist
+        const commonFields = ['ImageDescription', 'Artist', 'Copyright'];
+        commonFields.forEach(field => {
+          if (!metadataStore[field]) {
+            metadataStore[field] = {
+              value: '',
+              category: '[EXIF]',
+              isStandard: true
+            };
+          }
+        });
+        
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('success', `Loaded ${Object.keys(metadataStore).length} WebP metadata fields. Ready to edit!`);
+        
+      } catch (error) {
+        console.error('Error processing WebP:', error);
+        metadataStore = {
+          'ImageDescription': { value: '', category: '[EXIF]', isStandard: true },
+          'Artist': { value: '', category: '[EXIF]', isStandard: true },
+          'Copyright': { value: '', category: '[EXIF]', isStandard: true }
+        };
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('info', 'No existing metadata found. You can add new metadata!');
+      }
+    }
+
+    // ============================================================================
+    // TIFF PROCESSING (exifreader)
+    // ============================================================================
+    async function processTIFF(file) {
+      showOutput('info', 'Reading TIFF metadata with exifreader...');
+      
+      try {
+        if (typeof ExifReader === 'undefined') {
+          showOutput('error', 'TIFF library not loaded. Please refresh the page.');
+          return;
+        }
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const tags = ExifReader.load(arrayBuffer);
+        
+        metadataStore = {};
+        
+        // Process all tags
+        for (let tagName in tags) {
+          const tag = tags[tagName];
+          let value = tag.description || tag.value;
+          
+          if (value === null || value === undefined || value === '') continue;
+          
+          // Convert to string
+          if (typeof value === 'object' && !Array.isArray(value)) {
+            value = JSON.stringify(value);
+          } else if (Array.isArray(value)) {
+            value = value.join(', ');
+          }
+          
+          // Determine category
+          let category = '[TIFF]';
+          if (tagName.startsWith('GPS')) {
+            category = '[GPS]';
+          } else if (tagName.startsWith('EXIF') || ['DateTime', 'Make', 'Model'].includes(tagName)) {
+            category = '[EXIF]';
+          } else if (tagName.startsWith('XMP') || tagName.startsWith('XML')) {
+            category = '[XMP]';
+          } else if (tagName.startsWith('ICC')) {
+            category = '[ICC Profile]';
+          } else if (tagName.startsWith('IPTC')) {
+            category = '[IPTC]';
+          }
+          
+          const isStandard = standardFields.tiff.has(tagName);
+          
+          metadataStore[tagName] = {
+            value: String(value),
+            category: category,
+            isStandard: isStandard
+          };
+        }
+        
+        // Add common editable fields if they don't exist
+        const commonFields = ['ImageDescription', 'Artist', 'Copyright', 'Software'];
+        commonFields.forEach(field => {
+          if (!metadataStore[field]) {
+            metadataStore[field] = {
+              value: '',
+              category: '[TIFF]',
+              isStandard: true
+            };
+          }
+        });
+        
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('success', `Loaded ${Object.keys(metadataStore).length} TIFF metadata fields. Ready to edit!`);
+        
+      } catch (error) {
+        console.error('Error processing TIFF:', error);
+        metadataStore = {
+          'ImageDescription': { value: '', category: '[TIFF]', isStandard: true },
+          'Artist': { value: '', category: '[TIFF]', isStandard: true },
+          'Copyright': { value: '', category: '[TIFF]', isStandard: true },
+          'Software': { value: '', category: '[TIFF]', isStandard: true }
+        };
+        renderMetadataFields();
+        updateCategoryFilter();
+        metadataPanel.classList.add('active');
+        showOutput('info', 'No existing metadata found. You can add new metadata!');
+      }
+    }
+
+    // ============================================================================
+    // METADATA UI RENDERING
+    // ============================================================================
+    function renderMetadataFields() {
+      metadataFields.innerHTML = '';
+      
+      // Sort fields by category then by name
+      const sortedKeys = Object.keys(metadataStore).sort((a, b) => {
+        const catA = metadataStore[a].category;
+        const catB = metadataStore[b].category;
+        if (catA !== catB) return catA.localeCompare(catB);
+        return a.localeCompare(b);
+      });
+      
+      sortedKeys.forEach(key => {
+        const metadata = metadataStore[key];
+        
+        // Apply filter
+        if (currentFilter !== 'all' && metadata.category !== currentFilter) {
+          return; // Skip this field
+        }
+        
+        createMetadataField(key, metadata.value, metadata.category, metadata.isStandard);
+      });
+    }
+
+    // ============================================================================
+    // CATEGORY FILTER
+    // ============================================================================
+    function updateCategoryFilter() {
+      // Get all unique categories
+      const categories = new Set();
+      for (let key in metadataStore) {
+        categories.add(metadataStore[key].category);
+      }
+      
+      // Sort categories
+      const sortedCategories = Array.from(categories).sort();
+      
+      // Update dropdown
+      categoryFilter.innerHTML = '<option value="all">All</option>';
+      sortedCategories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        categoryFilter.appendChild(option);
+      });
+      
+      // Reset filter
+      currentFilter = 'all';
+      categoryFilter.value = 'all';
+    }
+
+    // Filter change handler
+    categoryFilter.addEventListener('change', (e) => {
+      currentFilter = e.target.value;
+      renderMetadataFields();
+    });
+
+    function createMetadataField(key, value, category, isStandard) {
+      const fieldDiv = document.createElement('div');
+      fieldDiv.className = 'metadata-field';
+      
+      const labelDiv = document.createElement('div');
+      labelDiv.className = 'field-label-container';
+      
+      const fieldNameDiv = document.createElement('div');
+      fieldNameDiv.className = 'field-name';
+      fieldNameDiv.textContent = key;
+      
+      const badge = document.createElement('span');
+      badge.className = `metadata-type-badge ${isStandard ? 'badge-standard' : 'badge-custom'}`;
+      badge.textContent = isStandard ? 'std' : 'custom';
+      fieldNameDiv.appendChild(badge);
+      
+      const categoryDiv = document.createElement('div');
+      categoryDiv.className = 'field-category';
+      categoryDiv.textContent = category;
+      
+      labelDiv.appendChild(fieldNameDiv);
+      labelDiv.appendChild(categoryDiv);
+      
+      const inputDiv = document.createElement('div');
+      let input;
+      
+      if (value && value.length > 60) {
+        input = document.createElement('textarea');
+        input.rows = 3;
+      } else {
+        input = document.createElement('input');
+        input.type = 'text';
+      }
+      
+      input.value = value || '';
+      input.dataset.key = key;
+      input.addEventListener('input', (e) => {
+        metadataStore[key].value = e.target.value;
+      });
+      inputDiv.appendChild(input);
+      
+      const actionDiv = document.createElement('div');
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = '🗑️';
+      deleteBtn.className = 'danger';
+      deleteBtn.title = 'Delete field';
+      deleteBtn.addEventListener('click', () => {
+        delete metadataStore[key];
+        fieldDiv.remove();
+        showOutput('info', `Field "${key}" removed.`);
+      });
+      actionDiv.appendChild(deleteBtn);
+      
+      fieldDiv.appendChild(labelDiv);
+      fieldDiv.appendChild(inputDiv);
+      fieldDiv.appendChild(actionDiv);
+      metadataFields.appendChild(fieldDiv);
+    }
+
+    // ============================================================================
+    // ADD CUSTOM FIELD
+    // ============================================================================
+    addFieldBtn.addEventListener('click', () => {
+      const fieldName = prompt('Enter custom field name:');
+      if (fieldName && fieldName.trim()) {
+        const cleanName = fieldName.trim();
+        if (metadataStore[cleanName] !== undefined) {
+          alert('A field with this name already exists!');
+          return;
+        }
+        
+        let category = '[Custom]';
+        if (currentFileType === 'jpeg') {
+          category = '[EXIF-Custom]';
+        } else if (currentFileType === 'png') {
+          category = '[PNG-tEXt]';
+        } else if (currentFileType === 'webp') {
+          category = '[WebP-Custom]';
+        } else if (currentFileType === 'tiff') {
+          category = '[TIFF-Custom]';
+        } else if (['mp3', 'flac', 'ogg', 'wav', 'm4a'].includes(currentFileType)) {
+          category = '[Custom]';
+        }
+        
+        metadataStore[cleanName] = {
+          value: '',
+          category: category,
+          isStandard: false
+        };
+        
+        // Update filter dropdown if needed
+        updateCategoryFilter();
+        
+        // If we're filtered, switch to the new field's category or "All"
+        if (currentFilter !== 'all' && currentFilter !== category) {
+          currentFilter = 'all';
+          categoryFilter.value = 'all';
+        }
+        
+        renderMetadataFields();
+        showOutput('success', `Custom field "${cleanName}" added!`);
+      }
+    });
+
+    // ============================================================================
+    // SAVE FILE WITH MODIFIED METADATA
+    // ============================================================================
+    saveBtn.addEventListener('click', async () => {
+      if (!currentFile) {
+        showOutput('error', 'No file loaded!');
+        return;
+      }
+
+      showOutput('info', 'Preparing modified file...');
+
+      try {
+        if (currentFileType === 'jpeg') {
+          await saveJPEG();
+        } else if (currentFileType === 'png') {
+          await savePNG();
+        } else if (['mp3', 'flac', 'ogg', 'wav', 'm4a'].includes(currentFileType)) {
+          await saveAudio();
+        } else {
+          showOutput('error', 'Saving is not yet supported for this file type.');
+        }
+      } catch (error) {
+        showOutput('error', `Error saving file: ${error.message}`);
+        console.error(error);
+      }
+    });
+
+    // ============================================================================
+    // SAVE METADATA TO TXT FILE
+    // ============================================================================
+    saveTxtBtn.addEventListener('click', () => {
+      if (!currentFile) {
+        showOutput('error', 'No file loaded!');
+        return;
+      }
+
+      try {
+        // Generate text content
+        let textContent = `Metadata for: ${currentFile.name}\n`;
+        textContent += `File Size: ${formatFileSize(currentFile.size)}\n`;
+        textContent += `File Type: ${currentFileType.toUpperCase()}\n`;
+        textContent += `\n${'='.repeat(60)}\n\n`;
+
+        // Sort by category
+        const sortedKeys = Object.keys(metadataStore).sort((a, b) => {
+          const catA = metadataStore[a].category;
+          const catB = metadataStore[b].category;
+          if (catA !== catB) return catA.localeCompare(catB);
+          return a.localeCompare(b);
+        });
+
+        let currentCategory = '';
+        sortedKeys.forEach(key => {
+          const metadata = metadataStore[key];
+          
+          // Apply current filter
+          if (currentFilter !== 'all' && metadata.category !== currentFilter) {
+            return;
+          }
+          
+          // Add category header if changed
+          if (metadata.category !== currentCategory) {
+            currentCategory = metadata.category;
+            textContent += `\n${currentCategory}\n${'-'.repeat(currentCategory.length)}\n`;
+          }
+          
+          // Add field
+          textContent += `${key}: ${metadata.value || '(empty)'}\n`;
+        });
+
+        // Create and download text file
+        const blob = new Blob([textContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        // Generate filename
+        const baseName = currentFile.name.replace(/\.[^/.]+$/, '');
+        a.download = `metadata_${baseName}.txt`;
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showOutput('success', 'Metadata exported to TXT file!');
+      } catch (error) {
+        console.error('Error exporting metadata:', error);
+        showOutput('error', 'Error exporting metadata: ' + error.message);
+      }
+    });
+
+    // ============================================================================
+    // JPEG SAVE (piexifjs)
+    // ============================================================================
+    async function saveJPEG() {
+      try {
+        // Load existing EXIF or create new
+        let exifObj;
+        try {
+          exifObj = piexif.load(originalImageData);
+        } catch (e) {
+          exifObj = { "0th": {}, "Exif": {}, "GPS": {}, "Interop": {}, "1st": {} };
+        }
+        
+        // Update EXIF with modified values
+        for (let key in metadataStore) {
+          const metadata = metadataStore[key];
+          const value = metadata.value;
+          
+          if (!value) continue; // Skip empty fields
+          
+          // Find the tag number for this field
+          let tagNum = null;
+          let section = null;
+          
+          for (let sect in exifTagNames) {
+            const tags = exifTagNames[sect];
+            for (let num in tags) {
+              if (tags[num] === key) {
+                tagNum = parseInt(num);
+                section = sect;
+                break;
+              }
+            }
+            if (tagNum) break;
+          }
+          
+          // If found, update it
+          if (tagNum && section && exifObj[section]) {
+            // Convert value based on tag type
+            if (key === 'UserComment') {
+              exifObj[section][tagNum] = new TextEncoder().encode(value);
+            } else if (['Make', 'Model', 'Software', 'ImageDescription', 'Artist', 'Copyright'].includes(key)) {
+              exifObj[section][tagNum] = value;
+            }
+          }
+        }
+        
+        // Convert EXIF back to bytes
+        const exifBytes = piexif.dump(exifObj);
+        
+        // Insert EXIF into image
+        const newImageData = piexif.insert(exifBytes, originalImageData);
+        
+        // Convert data URL to blob
+        const arr = newImageData.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        
+        downloadFile(u8arr, currentFile.name, mime);
+        showOutput('success', 'JPEG file saved with updated EXIF metadata!');
+        
+      } catch (error) {
+        console.error('JPEG save error:', error);
+        showOutput('error', 'Error saving JPEG: ' + error.message);
+      }
+    }
+
+    // ============================================================================
+    // PNG SAVE
+    // ============================================================================
+    async function savePNG() {
+      const arrayBuffer = await currentFile.arrayBuffer();
+      const originalData = new Uint8Array(arrayBuffer);
+      
+      // Find IEND chunk position
+      let iendPos = originalData.length - 12;
+      while (iendPos > 0) {
+        const type = String.fromCharCode(
+          originalData[iendPos + 4],
+          originalData[iendPos + 5],
+          originalData[iendPos + 6],
+          originalData[iendPos + 7]
+        );
+        if (type === 'IEND') break;
+        iendPos--;
+      }
+      
+      // Create text chunks for editable fields
+      let newChunksSize = 0;
+      const textChunks = [];
+      
+      for (let key in metadataStore) {
+        const metadata = metadataStore[key];
+        const value = metadata.value;
+        
+        // Only save tEXt fields and custom fields
+        if (!value || (!metadata.category.includes('tEXt') && !metadata.category.includes('Custom'))) continue;
+        
+        const keyBytes = new TextEncoder().encode(key);
+        const valueBytes = new TextEncoder().encode(value);
+        const chunkData = new Uint8Array(keyBytes.length + 1 + valueBytes.length);
+        chunkData.set(keyBytes, 0);
+        chunkData[keyBytes.length] = 0;
+        chunkData.set(valueBytes, keyBytes.length + 1);
+        
+        textChunks.push(chunkData);
+        newChunksSize += 12 + chunkData.length;
+      }
+      
+      const newFile = new Uint8Array(iendPos + newChunksSize + 12);
+      newFile.set(originalData.slice(0, iendPos), 0);
+      
+      let offset = iendPos;
+      textChunks.forEach(chunkData => {
+        const length = chunkData.length;
+        const view = new DataView(newFile.buffer, offset);
+        view.setUint32(0, length);
+        newFile.set([0x74, 0x45, 0x58, 0x74], offset + 4); // "tEXt"
+        newFile.set(chunkData, offset + 8);
+        
+        const crc = calculateCRC32(newFile.slice(offset + 4, offset + 8 + length));
+        view.setUint32(8 + length, crc);
+        
+        offset += 12 + length;
+      });
+      
+      newFile.set(originalData.slice(iendPos, iendPos + 12), offset);
+      
+      downloadFile(newFile, currentFile.name, 'image/png');
+      showOutput('success', 'PNG file saved with embedded text chunks!');
+    }
+
+    function calculateCRC32(data) {
+      const crcTable = [];
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let j = 0; j < 8; j++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        crcTable[i] = c;
+      }
+      
+      let crc = 0xFFFFFFFF;
+      for (let i = 0; i < data.length; i++) {
+        crc = crcTable[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+      }
+      return (crc ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    // ============================================================================
+    // AUDIO SAVE (browser-id3-writer)
+    // ============================================================================
+    async function saveAudio() {
+      try {
+        if (typeof ID3Writer === 'undefined') {
+          showOutput('error', 'ID3 writer library not loaded. Please refresh the page.');
+          return;
+        }
+        
+        const arrayBuffer = await currentFile.arrayBuffer();
+        
+        // Create ID3 writer
+        const writer = new ID3Writer(arrayBuffer);
+        
+        // Add metadata
+        for (let key in metadataStore) {
+          const metadata = metadataStore[key];
+          const value = metadata.value;
+          
+          if (!value) continue;
+          
+          // Map common fields to ID3 frames
+          const frameMap = {
+            'title': 'TIT2',
+            'artist': 'TPE1',
+            'album': 'TALB',
+            'year': 'TYER',
+            'comment': 'COMM',
+            'genre': 'TCON',
+            'track': 'TRCK',
+            'albumArtist': 'TPE2',
+            'composer': 'TCOM',
+            'publisher': 'TPUB'
+          };
+          
+          const frame = frameMap[key] || key;
+          
+          try {
+            if (frame === 'COMM') {
+              writer.setFrame('COMM', {
+                description: '',
+                text: value
+              });
+            } else {
+              writer.setFrame(frame, value);
+            }
+          } catch (e) {
+            console.warn(`Could not set frame ${frame}:`, e);
+          }
+        }
+        
+        writer.addTag();
+        const taggedBuffer = writer.arrayBuffer;
+        
+        downloadFile(new Uint8Array(taggedBuffer), currentFile.name, 'audio/mpeg');
+        showOutput('success', 'MP3 file saved with ID3v2 tags!');
+        
+      } catch (error) {
+        console.error('MP3 save error:', error);
+        showOutput('error', 'Error saving MP3: ' + error.message);
+      }
+    }
+
+    // ============================================================================
+    // FILE DOWNLOAD
+    // ============================================================================
+    function downloadFile(data, filename, mimeType) {
+      const blob = new Blob([data], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'modified_' + filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ============================================================================
+    // CLEAR ALL
+    // ============================================================================
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Clear all data and start over?')) {
+        currentFile = null;
+        currentFileType = null;
+        metadataStore = {};
+        originalImageData = null;
+        currentFilter = 'all';
+        metadataFields.innerHTML = '';
+        metadataPanel.classList.remove('active');
+        fileInfo.classList.add('hidden');
+        fileInput.value = '';
+        categoryFilter.innerHTML = '<option value="all">All</option>';
+        categoryFilter.value = 'all';
+        showOutput('info', 'All data cleared. Upload a new file to begin.');
+      }
+    });
+
+    // ============================================================================
+    // OUTPUT DISPLAY
+    // ============================================================================
+    function showOutput(type, message) {
+      const statusClass = {
+        'success': 'status-success',
+        'error': 'status-error',
+        'info': 'status-info'
+      }[type] || 'status-info';
+      
+      const icon = {
+        'success': '✅',
+        'error': '❌',
+        'info': 'ℹ️'
+      }[type] || 'ℹ️';
+      
+      output.innerHTML = `
+        <div class="status-message ${statusClass}">
+          <strong>${icon} ${type.toUpperCase()}</strong><br>
+          ${message}
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
