@@ -24,28 +24,27 @@ SOFTWARE.
 Third-Party Licenses and Credits
 ------------------------------------------------------------
 
-This software includes the following open-source libraries:
+This project includes the following open-source libraries,
+each distributed under the MIT License:
 
-- piexifjs © hMatoba (MIT License)
-  https://www.npmjs.com/package/piexifjs
+- piexifjs © hMatoba  
+- png-chunks-extract © Lovell  
+- png-chunks-encode © Lovell  
+- png-chunk-text © Lovell  
+- music-metadata-browser © Borewit  
+- browser-id3-writer © Eric Vidal  
+- exifreader © Jesper Palm  
 
-- png-chunks-extract © Lovell (MIT License)
-  https://www.npmjs.com/package/png-chunks-extract
+The full license texts for these components are available from their
+respective repositories:
 
-- png-chunks-encode © Lovell (MIT License)
-  https://www.npmjs.com/package/png-chunks-encode
-
-- png-chunk-text © Lovell (MIT License)
-  https://www.npmjs.com/package/png-chunk-text
-
-- music-metadata-browser © Borewit (MIT License)
-  https://www.npmjs.com/package/music-metadata-browser
-
-- browser-id3-writer © Eric Vidal (MIT License)
-  https://www.npmjs.com/package/browser-id3-writer
-
-- exifreader © Jesper Palm (MIT License)
-  https://www.npmjs.com/package/exifreader
+https://www.npmjs.com/package/piexifjs  
+https://www.npmjs.com/package/png-chunks-extract  
+https://www.npmjs.com/package/png-chunks-encode  
+https://www.npmjs.com/package/png-chunk-text  
+https://www.npmjs.com/package/music-metadata-browser  
+https://www.npmjs.com/package/browser-id3-writer  
+https://www.npmjs.com/package/exifreader  
 
 All third-party software components are distributed under the MIT License,
 which is compatible with the terms of this project’s license.
