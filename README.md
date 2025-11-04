@@ -1,5 +1,7 @@
-<img width="250" alt="Liminala-logo" src="./assets/images/logo.png" />
 # Liminala
+
+<img width="250" alt="Liminala-logo" src="./assets/images/logo.png" />
+
 Liminala is a self-contained, browser-based metadata editor and explorer for images and audio. It is built for creators who work in the spaces between art and code—ARG designers, digital artists, experimental storytellers, and anyone drawn to what hides beneath the surface of media. Everything happens locally in the browser. No installs, no accounts, no servers. Just you, your files, and the unseen data they carry.
 
 Liminala allows users to open a wide range of file formats and view the hidden structure that defines them. For images, it reveals EXIF, XMP, and textual chunks inside formats such as JPEG, PNG, TIFF, and WebP. For audio, it reads embedded tags and technical information from MP3, FLAC, OGG, WAV, and M4A files. The interface presents this information clearly, with an emphasis on both precision and readability, allowing direct editing of metadata values or the addition of new custom fields.
