@@ -1,2 +1,11 @@
+![Liminala logo](./assets/images/logo.png "Liminala")
 # Liminala
-A self-contained browser-based metadata editor and explorer for images and audio. Discover, edit, and extract hidden data layers in media files.
+Liminala is a self-contained, browser-based metadata editor and explorer for images and audio. It is built for creators who work in the spaces between art and code—ARG designers, digital artists, experimental storytellers, and anyone drawn to what hides beneath the surface of media. Everything happens locally in the browser. No installs, no accounts, no servers. Just you, your files, and the unseen data they carry.
+
+Liminala allows users to open a wide range of file formats and view the hidden structure that defines them. For images, it reveals EXIF, XMP, and textual chunks inside formats such as JPEG, PNG, TIFF, and WebP. For audio, it reads embedded tags and technical information from MP3, FLAC, OGG, WAV, and M4A files. The interface presents this information clearly, with an emphasis on both precision and readability, allowing direct editing of metadata values or the addition of new custom fields.
+
+Every feature is designed for immediacy and creative control. Metadata can be modified in place, saved back into the file, or exported as a readable text document for reference and archival work. A filter dropdown makes it easy to focus on a specific metadata family, such as EXIF, ID3v2, or PNG text chunks, while an “All” view provides a complete cross-section of everything embedded in the file. Liminala’s layout adapts fluidly across screen sizes, maintaining a consistent visual rhythm that feels approachable even when exploring dense data.
+
+The tool’s design philosophy follows the same aesthetic principles as its name. “Liminala” refers to thresholds and unseen layers, a reflection of what metadata represents: information that shapes a file but remains invisible until deliberately uncovered. The visual interface echoes this idea, using luminous contrasts and glass-like surfaces to create the sense of depth and transparency inherent to the medium itself.
+
+Although created with alternate reality game authors and players in mind, Liminala is equally valuable to photographers, archivists, sound designers, and developers who need a quick and trustworthy way to inspect metadata. It functions as a microscope for digital artifacts—a compact, portable environment for seeing what most tools leave unseen.
