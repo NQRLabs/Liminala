@@ -1,4 +1,4 @@
-![Liminala logo](./assets/images/logo.png "Liminala" =250x)
+<img width="250" alt="Liminala-logo" src="./assets/images/logo.png" />
 # Liminala
 Liminala is a self-contained, browser-based metadata editor and explorer for images and audio. It is built for creators who work in the spaces between art and code—ARG designers, digital artists, experimental storytellers, and anyone drawn to what hides beneath the surface of media. Everything happens locally in the browser. No installs, no accounts, no servers. Just you, your files, and the unseen data they carry.
 
