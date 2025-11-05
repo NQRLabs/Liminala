@@ -4,7 +4,7 @@
 
 **Liminala** is a lightweight, browser-based metadata explorer and editor for images and audio. It lets you inspect, modify, and export hidden data layers directly within your browser — no servers, installs, or uploads required.
 
-[**View Live Demo**](nqrlabs.com/Liminala/)
+[**View Live Demo**](https://nqrlabs.com/Liminala/)
 
 ## Overview
 
