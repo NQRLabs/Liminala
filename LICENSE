@@ -19,32 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-------------------------------------------------------------
-Third-Party Licenses and Credits
-------------------------------------------------------------
-
-This project includes the following open-source libraries,
-each distributed under the MIT License:
-
-- piexifjs © hMatoba  
-- png-chunks-extract © Lovell  
-- png-chunks-encode © Lovell  
-- png-chunk-text © Lovell  
-- music-metadata-browser © Borewit  
-- browser-id3-writer © Eric Vidal  
-- exifreader © Jesper Palm  
-
-The full license texts for these components are available from their
-respective repositories:
-
-https://www.npmjs.com/package/piexifjs  
-https://www.npmjs.com/package/png-chunks-extract  
-https://www.npmjs.com/package/png-chunks-encode  
-https://www.npmjs.com/package/png-chunk-text  
-https://www.npmjs.com/package/music-metadata-browser  
-https://www.npmjs.com/package/browser-id3-writer  
-https://www.npmjs.com/package/exifreader  
-
-All third-party software components are distributed under the MIT License,
-which is compatible with the terms of this project’s license.
