@@ -438,9 +438,13 @@
 
     /* FOOTER / LICENSE */
     .license-footer {
-      margin-top: 30px;
+      width: 92vw;
+      max-width: 760px;
+      border-top: 2px solid var(--border);
+      margin-top: auto;
       margin-bottom: 20px;
-      padding: 10px 8px;
+      padding-top: 8px;
+      padding-bottom: 0;
       font-size: 0.68rem;
       color: var(--dim);
       opacity: 0.7;
@@ -449,11 +453,20 @@
       text-align: center;
     }
 
-    .license-footer:hover {
-      opacity: 1;
+    .license-footer a {
+      color: var(--dim);
+      transition: color 0.3s ease;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .license-footer a:hover {
+      color: #00ff88;
+      text-decoration: underline;
+      cursor: pointer;
     }
 
     .license-overlay {
+      backdrop-filter: blur(4px);
       display: none;
       position: fixed;
       inset: 0;
@@ -471,13 +484,14 @@
       border: 2px solid var(--border);
       border-radius: 12px;
       padding: 20px;
+      padding-bottom: 0px;
       max-width: 520px;
       width: 90%;
       max-height: 80vh;
       overflow-y: auto;
       box-shadow: 0 20px 60px rgba(0,0,0,.6);
       z-index: 1000;
-      text-align: center;
+      text-align: left;
     }
 
     .license-modal.show,
@@ -612,38 +626,43 @@
   </section>
 
   <!-- FOOTER / LICENSE -->
-  <footer class="license-footer" id="licenseLink">
-    MIT License • Developed by NQR • Click to view
+  <footer class="license-footer">
+    <a href="https://youtube.com/@CLU-NQR" target="_blank">YouTube</a> &middot;
+    <a href="https://discord.gg/HT9YE8rvuN" target="_blank">Discord</a> &middot;
+    <a href="https://nqrlabs.com" target="_blank">NQR Labs</a> &middot;
+    <a href="https://github.com/NQRLabs" target="_blank">GitHub</a>
+    <br>
+    &copy; 2025 NQR &middot; <a id="licenseLink">License</a> 
   </footer>
 
   <div class="license-overlay" id="licenseOverlay"></div>
   <div class="license-modal" id="licenseModal" role="dialog" aria-modal="true" aria-labelledby="licenseTitle">
     <div class="license-modal-header">
-      <h3 class="license-modal-title" id="licenseTitle">MIT License</h3>
+      <h3 class="license-modal-title" id="licenseTitle">Liminala License</h3>
       <span class="license-modal-close" id="licenseClose" aria-label="Close license dialog">&times;</span>
     </div>
-    <pre class="small-muted" style="text-align:center; white-space:pre-wrap; margin-top:14px;">
-Copyright (c) 2025 NQR
+    <pre class="small-muted" style="white-space:pre-wrap; margin-top:14px;">
+Liminala - MIT License
+
+Copyright &copy; 2025 NQR
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-------------------------------------------------------------
+<hr>
 Third-Party Licenses and Credits
-------------------------------------------------------------
-    
+--------------------------------
 This project includes the following open-source libraries, each distributed under the MIT License:
     
-piexifjs © hMatoba  
-png-chunks-extract © Lovell  
-png-chunks-encode © Lovell  
-png-chunk-text © Lovell  
-music-metadata-browser © Borewit  
-browser-id3-writer © Eric Vidal  
-exifreader © Jesper Palm  
+piexifjs &copy; hMatoba  
+png-chunks-extract &copy; Lovell  
+png-chunks-encode &copy; Lovell  
+png-chunk-text &copy; Lovell  
+music-metadata-browser &copy; Borewit  
+browser-id3-writer &copy; Eric Vidal  
+exifreader &copy; Jesper Palm  
     
 The full license texts for these components are available from their respective repositories:
     
